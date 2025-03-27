@@ -1,0 +1,42 @@
+import telebot
+from telebot import types
+
+# Yahan apni BotFather wali API key dal do
+BOT_TOKEN = "YOUR_BOT_API_KEY"
+CHANNEL_USERNAME = "@YT_MURSLEEN_CHEATS_VIP"  # Example: @yourchannel
+
+bot = telebot.TeleBot(7870341024:AAENK6F0D6mgRKbnWGLRc7w_WFmvsCK5r8E)
+
+# Force join check function
+def is_user_joined(user_id):
+    try:
+        member = bot.get_chat_member(@YT_MURSLEEN_CHEATS_VIP, 7200108158)
+        return member.status in ["member", "administrator", "creator"]
+    except:
+        return False
+
+# Start command
+@bot.message_handler(commands=["start"])
+def start(message):
+    user_id = message.chat.id
+    if is_user_joined(user_id):
+        bot.send_message(user_id, "✅ Welcome! You have joined the channel. You can now use the bot.")
+    else:
+        markup = types.InlineKeyboardMarkup()
+        join_button = types.InlineKeyboardButton("🔗 Join Channel", url=f"https://t.me/{CHANNEL_USERNAME}")
+        check_button = types.InlineKeyboardButton("✅ I have joined", callback_data="check")
+        markup.add(join_button)
+        markup.add(check_button)
+
+        bot.send_message(user_id, "❌ You must join our channel to use this bot.", reply_markup=markup)
+
+# Callback handler
+@bot.callback_query_handler(func=lambda call: call.data == "check")
+def callback_check(call):
+    user_id = call.message.chat.id
+    if is_user_joined(user_id):
+        bot.send_message(user_id, "✅ Thank you for joining! Now you can use the bot.")
+    else:
+        bot.answer_callback_query(call.id, "❌ You haven't joined yet! Please join first.")
+
+bot.polling()
